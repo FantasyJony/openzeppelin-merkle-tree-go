@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCreateTree(t *testing.T) {
+func TestSMTCreateTree(t *testing.T) {
 
 	tree, err := CreateTree([]string{SOL_ADDRESS, SOL_UINT256})
 	if err != nil {
@@ -42,7 +42,7 @@ func TestCreateTree(t *testing.T) {
 	fmt.Println("03 Merkle Root: ", hexutil.Encode(root))
 }
 
-func TestOf(t *testing.T) {
+func TestSMTOf(t *testing.T) {
 
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
@@ -59,10 +59,12 @@ func TestOf(t *testing.T) {
 		leaf2,
 	}
 
-	tree, err := Of([]string{
-		SOL_ADDRESS,
-		SOL_UINT256,
-	}, leaves)
+	tree, err := Of(
+		leaves,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256,
+		})
 
 	if err != nil {
 		fmt.Println("Of ERR", err)
@@ -70,6 +72,96 @@ func TestOf(t *testing.T) {
 
 	root := hexutil.Encode(tree.GetRoot())
 	fmt.Println("Merkle Root: ", root)
+}
+
+func TestSMTVerify(t *testing.T) {
+
+	root, err := hexutil.Decode("0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	leafEncodings := []string{
+		SOL_ADDRESS,
+		SOL_UINT256,
+	}
+
+	value := []interface{}{
+		SolAddress("0x1111111111111111111111111111111111111111"),
+		SolNumber("5000000000000000000"),
+	}
+
+	proofValue01, err := hexutil.Decode("0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc")
+	if err != nil {
+		fmt.Println(err)
+	}
+	proof := [][]byte{
+		proofValue01,
+	}
+
+	leaf, err := LeafHash(leafEncodings, value)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	verified, err := Verify(root, leaf, proof)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(verified)
+}
+
+func TestSMTVerifyMultiProof(t *testing.T) {
+
+	root, err := hexutil.Decode("0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	leafEncodings := []string{
+		SOL_ADDRESS,
+		SOL_UINT256,
+	}
+
+	value := []interface{}{
+		SolAddress("0x1111111111111111111111111111111111111111"),
+		SolNumber("5000000000000000000"),
+	}
+
+	leaf1, err := LeafHash(leafEncodings, value)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	proofValue01, err := hexutil.Decode("0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc")
+	if err != nil {
+		fmt.Println(err)
+	}
+	proof := [][]byte{
+		proofValue01,
+	}
+
+	proofFlags := []bool{
+		false,
+	}
+
+	leaves := [][]byte{
+		leaf1,
+	}
+
+	multiProof := &MultiProof{
+		Proof:      proof,
+		ProofFlags: proofFlags,
+		Leaves:     leaves,
+	}
+
+	verified, err := VerifyMultiProof(root, multiProof)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(verified)
 }
 
 func TestGetProofAndVerify(t *testing.T) {
@@ -89,10 +181,12 @@ func TestGetProofAndVerify(t *testing.T) {
 		leaf2,
 	}
 
-	tree, err := Of([]string{
-		SOL_ADDRESS,
-		SOL_UINT256,
-	}, leaves)
+	tree, err := Of(
+		leaves,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256,
+		})
 
 	if err != nil {
 		fmt.Println("Of ERR", err)
@@ -154,10 +248,12 @@ func TestGetMultiProofAndVerify(t *testing.T) {
 		leaf2,
 	}
 
-	tree, err := Of([]string{
-		SOL_ADDRESS,
-		SOL_UINT256,
-	}, leaves)
+	tree, err := Of(
+		leaves,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256,
+		})
 
 	if err != nil {
 		fmt.Println("Of ERR", err)
@@ -172,11 +268,14 @@ func TestGetMultiProofAndVerify(t *testing.T) {
 	}
 	fmt.Println("02 leaf1 proof: ", proof)
 
+	proof02, err := tree.GetMultiProofWithIndices([]int{0})
+	fmt.Println("03 leaf1 proof: ", proof02)
+
 	multiValue, err := tree.VerifyMultiProof(proof)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("03 VerifyMultiProof: ", multiValue)
+	fmt.Println("04 VerifyMultiProof: ", multiValue)
 }
 
 func TestDumpOf(t *testing.T) {
@@ -196,10 +295,12 @@ func TestDumpOf(t *testing.T) {
 		leaf2,
 	}
 
-	tree, err := Of([]string{
-		SOL_ADDRESS,
-		SOL_UINT256,
-	}, leaves)
+	tree, err := Of(
+		leaves,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256,
+		})
 
 	if err != nil {
 		fmt.Println("Of ERR", err)
@@ -222,6 +323,13 @@ func TestDumpOf(t *testing.T) {
 		fmt.Println(err)
 	}
 	fmt.Println(string(value2))
+
+	fmt.Println("04 Load")
+	tree3, err := Load([]byte(string(value2)))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(hexutil.Encode(tree3.GetRoot()))
 }
 
 func TestDumpLeafProof(t *testing.T) {
@@ -241,10 +349,12 @@ func TestDumpLeafProof(t *testing.T) {
 		leaf2,
 	}
 
-	tree, err := Of([]string{
-		SOL_ADDRESS,
-		SOL_UINT256,
-	}, leaves)
+	tree, err := Of(
+		leaves,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256,
+		})
 
 	if err != nil {
 		fmt.Println("Of ERR", err)

@@ -14,8 +14,8 @@ var (
 )
 
 type StandardTree struct {
-	LeafEncodings []string
-	Leaves        []*LeafValue
+	leafEncodings []string
+	leaves        []*LeafValue
 	hashLookup    map[string]int
 	tree          [][]byte
 }
@@ -86,11 +86,11 @@ func (l *LeafValue) ToString() string {
 
 func CreateTree(leafEncodings []string) (*StandardTree, error) {
 	return &StandardTree{
-		LeafEncodings: leafEncodings,
+		leafEncodings: leafEncodings,
 	}, nil
 }
 
-func Of(leafEncodings []string, leaves [][]interface{}) (*StandardTree, error) {
+func Of(leaves [][]interface{}, leafEncodings []string) (*StandardTree, error) {
 	tree, err := CreateTree(leafEncodings)
 	if err != nil {
 		return nil, err
@@ -108,15 +108,27 @@ func Of(leafEncodings []string, leaves [][]interface{}) (*StandardTree, error) {
 	return tree, nil
 }
 
+func LeafHash(leafEncodings []string, values []interface{}) ([]byte, error) {
+	return abiPackLeafHash(leafEncodings, values...)
+}
+
+func Verify(rootHash []byte, leaf []byte, proof [][]byte) (bool, error) {
+	return verify(rootHash, leaf, proof)
+}
+
+func VerifyMultiProof(rootHash []byte, multiProof *MultiProof) (bool, error) {
+	return verifyMultiProof(rootHash, multiProof)
+}
+
 func (st *StandardTree) checkLeafEncodings() error {
-	if st.LeafEncodings == nil || len(st.LeafEncodings) == 0 {
+	if st.leafEncodings == nil || len(st.leafEncodings) == 0 {
 		return errors.New("LeafEncodings is not in StandardTree")
 	}
 	return nil
 }
 
 func (st *StandardTree) validateValue(valueIndex int) ([]byte, error) {
-	err := checkBounds(valueIndex, st.Leaves)
+	err := checkBounds(valueIndex, st.leaves)
 	if err != nil {
 		return nil, err
 	}
@@ -141,11 +153,11 @@ func (st *StandardTree) validateValue(valueIndex int) ([]byte, error) {
 }
 
 func (st *StandardTree) getLeafValue(valueIndex int) (*LeafValue, error) {
-	err := checkBounds(valueIndex, st.Leaves)
+	err := checkBounds(valueIndex, st.leaves)
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range st.Leaves {
+	for _, v := range st.leaves {
 		if v.ValueIndex == valueIndex {
 			return v, nil
 		}
@@ -170,7 +182,7 @@ func (st *StandardTree) leafLookup(values []interface{}) (int, error) {
 }
 
 func (st *StandardTree) LeafHash(values []interface{}) ([]byte, error) {
-	return abiPackLeafHash(st.LeafEncodings, values...)
+	return LeafHash(st.leafEncodings, values)
 }
 
 func (st *StandardTree) LeafHashWithIndex(index int) ([]byte, error) {
@@ -307,7 +319,7 @@ func (st *StandardTree) AddLeaf(values []interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	if len(st.LeafEncodings) != len(values) {
+	if len(st.leafEncodings) != len(values) {
 		return nil, errors.New("Length mismatch")
 	}
 
@@ -318,23 +330,23 @@ func (st *StandardTree) AddLeaf(values []interface{}) ([]byte, error) {
 
 	leafValue := &LeafValue{
 		Value:      values,
-		ValueIndex: len(st.Leaves),
+		ValueIndex: len(st.leaves),
 		Hash:       leafHash,
 	}
 
-	st.Leaves = append(st.Leaves, leafValue)
+	st.leaves = append(st.leaves, leafValue)
 	return leafHash, nil
 }
 
 func (st *StandardTree) MakeTree() ([]byte, error) {
 
-	if len(st.Leaves) == 0 {
+	if len(st.leaves) == 0 {
 		return nil, errors.New("Expected non-zero number of leaves")
 	}
 
 	// sort hash
-	leafValues := make([]*LeafValue, len(st.Leaves))
-	for k, v := range st.Leaves {
+	leafValues := make([]*LeafValue, len(st.leaves))
+	for k, v := range st.leaves {
 		leafValues[k] = v
 	}
 	sort.Slice(leafValues, func(i, j int) bool {
@@ -363,6 +375,10 @@ func (st *StandardTree) MakeTree() ([]byte, error) {
 	return st.GetRoot(), nil
 }
 
+func (st *StandardTree) Entries() []*LeafValue {
+	return st.leaves
+}
+
 func (st *StandardTree) GetRoot() []byte {
 	return st.tree[0]
 }
@@ -372,16 +388,16 @@ func (st *StandardTree) Dump() *StandardMerkleTreeData {
 	for k, v := range st.tree {
 		tree[k] = hexutil.Encode(v)
 	}
-	valueData := make([]*StandardValueData, len(st.Leaves))
-	for k, v := range st.Leaves {
+	valueData := make([]*StandardValueData, len(st.leaves))
+	for k, v := range st.leaves {
 		valueData[k] = &StandardValueData{
 			TreeIndex: v.TreeIndex,
-			Value:     v.getSolValueMarshal(st.LeafEncodings),
+			Value:     v.getSolValueMarshal(st.leafEncodings),
 		}
 	}
 	return &StandardMerkleTreeData{
 		Format:       "standard-v1",
-		LeafEncoding: st.LeafEncodings,
+		LeafEncoding: st.leafEncodings,
 		Tree:         tree,
 		Values:       valueData,
 	}
@@ -402,14 +418,18 @@ func TreeUnmarshal(value []byte) (*StandardTree, error) {
 	for k, v := range std.Values {
 		values[k] = v.getSolValueUnmarshal(std.LeafEncoding)
 	}
-	tree, err := Of(std.LeafEncoding, values)
+	tree, err := Of(values, std.LeafEncoding)
 	return tree, err
 }
 
+func Load(value []byte) (*StandardTree, error) {
+	return TreeUnmarshal(value)
+}
+
 func (st *StandardTree) DumpLeafProof() (*StandardMerkleTreeProofData, error) {
-	leafProofData := make([]*StandardMerkleLeafProofData, len(st.Leaves))
-	for k, v := range st.Leaves {
-		values := v.getSolValueMarshal(st.LeafEncodings)
+	leafProofData := make([]*StandardMerkleLeafProofData, len(st.leaves))
+	for k, v := range st.leaves {
+		values := v.getSolValueMarshal(st.leafEncodings)
 		leafProof, err := st.GetProof(v.Value)
 		if err != nil {
 			return nil, err
@@ -426,7 +446,7 @@ func (st *StandardTree) DumpLeafProof() (*StandardMerkleTreeProofData, error) {
 	return &StandardMerkleTreeProofData{
 		Root:         hexutil.Encode(st.GetRoot()),
 		Proofs:       leafProofData,
-		LeafEncoding: st.LeafEncodings,
+		LeafEncoding: st.leafEncodings,
 	}, nil
 }
 
