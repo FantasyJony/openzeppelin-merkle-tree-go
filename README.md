@@ -10,7 +10,7 @@ contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/util
 
 ## Installation
 ```
-go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.0.3
+go get github.com/FantasyJony/openzeppelin-merkle-tree-go
 ```
 
 ```
