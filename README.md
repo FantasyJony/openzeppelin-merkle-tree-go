@@ -2,8 +2,8 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
-![Version](https://img.shields.io/badge/version-v1.0.4-blue)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]([https://opensource.org/licenses/MIT](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE))
+[![Version](https://img.shields.io/badge/version-v1.0.4-blue)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/releases/tag/v1.0.4)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE)
 
 
 
