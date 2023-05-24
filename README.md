@@ -325,10 +325,6 @@ leafHash, err := tree.LeafHash(value)
 
 ### `TreeMarshal`
 
-```go
-jsonValue , err := tree.TreeMarshal()
-```
-
 ```markdown
 {
     "format": "standard-v1",
@@ -361,11 +357,6 @@ jsonValue , err := tree.TreeMarshal()
 ```
 
 ### `TreeProofMarshal`
-
-```go
-jsonValue , err := tree.TreeProofMarshal()
-```
-
 ```markdown
 {
     "root": "0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77",
