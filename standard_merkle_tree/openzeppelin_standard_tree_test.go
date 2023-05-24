@@ -1,4 +1,4 @@
-package standard_tree
+package standard_merkle_tree
 
 import (
 	"fmt"

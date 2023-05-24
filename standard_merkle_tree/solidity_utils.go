@@ -1,4 +1,4 @@
-package standard_tree
+package standard_merkle_tree
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
