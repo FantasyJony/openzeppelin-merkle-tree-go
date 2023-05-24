@@ -215,7 +215,7 @@ func TestDumpOf(t *testing.T) {
 	}
 	fmt.Println(string(value))
 
-	fmt.Println("02 TreeUnmarshal")
+	fmt.Println("03 TreeUnmarshal")
 	tree2, err := TreeUnmarshal(value)
 	value2, err := tree2.TreeMarshal()
 	if err != nil {
