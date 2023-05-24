@@ -1,4 +1,4 @@
-package merkle_tree
+package standard_tree
 
 const SOL_ADDRESS = "address"
 
