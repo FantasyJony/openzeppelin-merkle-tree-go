@@ -1,4 +1,4 @@
-# GO Openzeppelin Standard Tree
+# Openzeppelin Standard Tree Go
 
 A Go library to generate merkle trees and merkle proofs.
 
