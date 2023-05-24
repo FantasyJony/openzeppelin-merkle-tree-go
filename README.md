@@ -2,6 +2,11 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
+![Version](https://img.shields.io/badge/version-v1.0.4-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]([https://opensource.org/licenses/MIT](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE))
+
+
+
 ## @openzeppelin/merkle-tree
 
 fork from [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
@@ -10,7 +15,7 @@ contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/util
 
 ## Installation
 ```
-go get github.com/FantasyJony/openzeppelin-merkle-tree-go
+go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.0.4
 ```
 
 ```
@@ -392,3 +397,6 @@ leafHash, err := tree.LeafHash(value)
 ```solidity
 bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(addr, amount))));
 ```
+
+## License
+[MIT License](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE)
