@@ -394,7 +394,7 @@ leafHash, err := tree.LeafHash(value)
 
 ### `TreeMarshal`
 
-```markdown
+```json
 {
     "format": "standard-v1",
     "tree": [
@@ -426,7 +426,7 @@ leafHash, err := tree.LeafHash(value)
 ```
 
 ### `TreeProofMarshal`
-```markdown
+```json
 {
     "root": "0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77",
     "leafEncoding": [
