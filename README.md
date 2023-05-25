@@ -2,12 +2,10 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
-[![Version](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
+[![Tag](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
 [![License](https://img.shields.io/github/license/FantasyJony/openzeppelin-merkle-tree-go)](https://opensource.org/licenses/Apache-2.0)
 [![Go version](https://img.shields.io/github/go-mod/go-version/FantasyJony/openzeppelin-merkle-tree-go)](https://golang.org/dl/#stable)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go/logrus.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
-
-[//]: # (/github/pipenv/locked/dependency-version/:user/:repo/:kind?/:packageName)
+[![Go Reference](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
 
 ## @openzeppelin/merkle-tree
 
