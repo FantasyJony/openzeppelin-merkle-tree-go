@@ -2,9 +2,12 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
-[![Version](https://img.shields.io/badge/version-v1.0.6-blue)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/releases/tag/v1.0.4)
-[![PkgGoDev](https://pkg.go.dev/badge/ggithub.com/FantasyJony/openzeppelin-merkle-tree-go/logrus.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Version](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
+[![License](https://img.shields.io/github/license/FantasyJony/openzeppelin-merkle-tree-go)](https://opensource.org/licenses/Apache-2.0)
+[![Go version](https://img.shields.io/github/go-mod/go-version/FantasyJony/openzeppelin-merkle-tree-go)](https://golang.org/dl/#stable)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go/logrus.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
+
+[//]: # (/github/pipenv/locked/dependency-version/:user/:repo/:kind?/:packageName)
 
 ## @openzeppelin/merkle-tree
 
