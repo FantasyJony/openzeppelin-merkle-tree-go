@@ -2,7 +2,7 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
-[![Version](https://img.shields.io/badge/version-v1.0.4-blue)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/releases/tag/v1.0.4)
+[![Version](https://img.shields.io/badge/version-v1.0.6-blue)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/releases/tag/v1.0.4)
 [![PkgGoDev](https://pkg.go.dev/badge/ggithub.com/FantasyJony/openzeppelin-merkle-tree-go/logrus.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -14,7 +14,7 @@ contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/util
 
 ## Installation
 ```
-go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.0.4
+go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.0.6
 ```
 
 ```
