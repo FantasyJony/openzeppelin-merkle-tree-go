@@ -25,14 +25,15 @@ go mod tidy
 
 ```go
 package main
-
+    
 import (
     "fmt"
     smt "github.com/FantasyJony/openzeppelin-merkle-tree-go/standard_merkle_tree"
     "github.com/ethereum/go-ethereum/common/hexutil"
 )
-
+    
 func main() {
+    
     values := [][]interface{}{
         {
             smt.SolAddress("0x1111111111111111111111111111111111111111"),
@@ -49,52 +50,95 @@ func main() {
         smt.SOL_UINT256,
     }
     
+    fmt.Println("=== (1) Of BEGIN ===")
+    
     // (1) make tree
-    tree, err := smt.Of(values, leafEncodings)
+    t1, err := smt.Of(values, leafEncodings)
     handleError(err)
-    fmt.Println("(1) Merkle Root: ", hexutil.Encode(tree.GetRoot()))
+    fmt.Println("Root: ", hexutil.Encode(t1.GetRoot()))
     
+    fmt.Println("=== (1) Of END ===")
+    
+    fmt.Println("=== (2) Dump BEGIN ===")
     // (2) dump
-    dump, err := tree.TreeMarshal()
+    dump, err := t1.TreeMarshal()
     handleError(err)
-    fmt.Println("(2) Dump: ", string(dump))
+    fmt.Println(string(dump))
     
-    // (3) dump -> tree
-    newTree, err := smt.TreeUnmarshal(dump)
+    fmt.Println("=== (2) Dump END ===")
+    
+    fmt.Println("=== (3) Load BEGIN ===")
+    // (3) load
+    t2, err := smt.Load(dump)
     handleError(err)
     
-    entries := newTree.Entries()
+    entries := t2.Entries()
     for k, v := range entries {
         if v.Value[0] == smt.SolAddress("0x1111111111111111111111111111111111111111") {
-            proof, err := newTree.GetProofWithIndex(k)
+            proof, err := t2.GetProofWithIndex(k)
             handleError(err)
-            fmt.Println("(3) ValueIndex:", v.ValueIndex, " TreeIndex:", v.TreeIndex, " Hash:", hexutil.Encode(v.Hash), " Value:", v.Value)
+            fmt.Println("ValueIndex:", v.ValueIndex, " TreeIndex:", v.TreeIndex, " Hash:", hexutil.Encode(v.Hash), " Value:", v.Value)
             for pk, pv := range proof {
-                fmt.Println("(3) Proof k:", pk, " v:", hexutil.Encode(pv))
+                fmt.Println("Proof k:", pk, " v:", hexutil.Encode(pv))
             }
         }
     }
+	
+    fmt.Println("=== (3) Load END ===")
+    
+    fmt.Println("=== (4) DumpLeafProof BEGIN ===")
     
     // (4) dump leaf proof
-    leafProofDump, err := tree.TreeProofMarshal()
+    leafProofDump, err := t2.TreeProofMarshal()
     handleError(err)
-    fmt.Println("(4) Dump Leaf Proof: ", string(leafProofDump))
+    fmt.Println(string(leafProofDump))
     
+    fmt.Println("=== (4) DumpLeafProof END ===")
+    
+    fmt.Println("=== (5) Verify BEGIN ===")
     // (5) verify proof
-    firstProof, err := newTree.GetProofWithIndex(0)
+    firstProof, err := t2.GetProofWithIndex(0)
     handleError(err)
     firstValue := entries[0].Value
     
-	verified, err := newTree.Verify(firstProof, firstValue)
+    verified, err := t2.Verify(firstProof, firstValue)
     handleError(err)
-    fmt.Println("(5) Verify:", verified)
+    fmt.Println("Verify:", verified)
+    fmt.Println("=== (5) Verify END ===")
+    
+    //fmt.Println("=== (6) CreateTree BEGIN ===")
+    
+    // (6) create tree
+    t3, err := smt.CreateTree(leafEncodings)
+    
+    //fmt.Println("=== (6) CreateTree END ===")
+    
+    fmt.Println("=== (7) AddLeaf BEGIN ===")
+    
+    // (7) add leaf
+    leafHash0, err := t3.AddLeaf(values[0])
+    fmt.Println("index: 0 , AddLeaf: ", hexutil.Encode(leafHash0))
+    
+    leafHash1, err := t3.AddLeaf(values[1])
+    fmt.Println("index: 1 , AddLeaf: ", hexutil.Encode(leafHash1))
+    
+    fmt.Println("=== (7) AddLeaf END ===")
+    
+    fmt.Println("=== (8) MakeTree BEGIN ===")
+    
+    // (8) make tree
+    r3, err := t3.MakeTree()
+    fmt.Println("(8) MakeTree Root: ", hexutil.Encode(r3))
+    
+    fmt.Println("=== (8) MakeTree END ===")
 }
-
+    
 func handleError(err error) {
     if err != nil {
         panic(err)
     }
 }
+
 ```
 
 ## API & Examples
@@ -128,6 +172,12 @@ tree, err := smt.Of(
         smt.SOL_UINT256,
     },
 )
+```
+
+### `smt.CreateTree`
+
+```go
+tree, err := smt.CreateTree([]string{smt.SOL_ADDRESS, smt.SOL_UINT256})
 ```
 
 ### `smt.Verify`
@@ -227,6 +277,21 @@ verified, err := smt.VerifyMultiProof(root, multiProof)
 ```go
 value := "{\"format\":\"standard-v1\",\"tree\":[\"0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77\",\"0xeb02c421cfa48976e66dfb29120745909ea3a0f843456c263cf8f1253483e283\",\"0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc\"],\"values\":[{\"value\":[\"0x1111111111111111111111111111111111111111\",\"5000000000000000000\"],\"treeIndex\":1},{\"value\":[\"0x2222222222222222222222222222222222222222\",\"2500000000000000000\"],\"treeIndex\":2}],\"leafEncoding\":[\"address\",\"uint256\"]}"
 tree , err := smt.Load([]byte(value))
+```
+
+### `tree.AddLeaf`
+
+```go
+value := []interface{}{
+    smt.SolAddress("0x1111111111111111111111111111111111111111"),
+    smt.SolNumber("5000000000000000000"),
+}
+leafHash, err := tree.AddLeaf(value)
+```
+
+### `tree.MakeTree`
+```go
+rootHash, err := tree.MakeTree()
 ```
 
 ### `tree.GetRoot`
