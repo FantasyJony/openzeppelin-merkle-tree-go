@@ -396,6 +396,3 @@ leafHash, err := tree.LeafHash(value)
 ```solidity
 bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(addr, amount))));
 ```
-
-## License
-[MIT License](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE)
