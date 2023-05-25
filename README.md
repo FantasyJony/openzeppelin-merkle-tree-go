@@ -3,9 +3,8 @@
 A Go library to generate merkle trees and merkle proofs.
 
 [![Version](https://img.shields.io/badge/version-v1.0.4-blue)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/releases/tag/v1.0.4)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE)
-
-
+[![PkgGoDev](https://pkg.go.dev/badge/ggithub.com/FantasyJony/openzeppelin-merkle-tree-go/logrus.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## @openzeppelin/merkle-tree
 
@@ -85,8 +84,8 @@ func main() {
     firstProof, err := newTree.GetProofWithIndex(0)
     handleError(err)
     firstValue := entries[0].Value
-	
-    verified, err := newTree.Verify(firstProof, firstValue)
+    
+	verified, err := newTree.Verify(firstProof, firstValue)
     handleError(err)
     fmt.Println("(5) Verify:", verified)
 }
@@ -129,12 +128,6 @@ tree, err := smt.Of(
         smt.SOL_UINT256,
     },
 )
-```
-
-### `smt.CreateTree`
-
-```go
-tree, err := smt.CreateTree([]string{smt.SOL_ADDRESS, smt.SOL_UINT256})
 ```
 
 ### `smt.Verify`
@@ -195,7 +188,7 @@ value := []interface{}{
 }
 
 // leaf
-leaf1, err := smt.LeafHash(leafEncodings, value)
+leaf1, err := smt,LeafHash(leafEncodings, value)
 if err != nil {
     fmt.Println(err)
 }
@@ -236,22 +229,11 @@ value := "{\"format\":\"standard-v1\",\"tree\":[\"0xd4dee0beab2d53f2cc83e567171b
 tree , err := smt.Load([]byte(value))
 ```
 
-### `tree.AddLeaf`
-
-```go
-value := []interface{}{
-    smt.SolAddress("0x1111111111111111111111111111111111111111"),
-    smt.SolNumber("5000000000000000000"),
-}
-leafHash, err := tree.AddLeaf(value)
-fmt.Println(hexutil.Encode(leafHash))
-```
-
 ### `tree.GetRoot`
 
 ```go
 rootHash := tree.GetRoot()
-fmt.Println(hexutil.Encode(rootHash))
+rootHashValue , err := hexutil.Encode(rootHash)
 ```
 
 ### `tree.Dump` or `tree.TreeMarshal`
@@ -414,3 +396,6 @@ leafHash, err := tree.LeafHash(value)
 ```solidity
 bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(addr, amount))));
 ```
+
+## License
+[MIT License](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/LICENSE)
