@@ -178,10 +178,9 @@ Run: [main_run.txt](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/b
 
 ## Dump
 
-TreeMarshal: [tree.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_tree.json)
+TreeMarshal: [dump_tree.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_tree.json)
 
-TreeProofMarshal:[proof.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_proof.json)
-
+TreeProofMarshal: [dump_proof.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_proof.json)
 
 ## Solidity
 
