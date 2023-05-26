@@ -17,6 +17,14 @@ func main() {
 			smt.SolAddress("0x2222222222222222222222222222222222222222"),
 			smt.SolNumber("2500000000000000000"),
 		},
+		{
+			smt.SolAddress("0x3333333333333333333333333333333333333333"),
+			smt.SolNumber("1500000000000000000"),
+		},
+		{
+			smt.SolAddress("0x4444444444444444444444444444444444444444"),
+			smt.SolNumber("1000000000000000000"),
+		},
 	}
 
 	leafEncodings := []string{
@@ -33,78 +41,102 @@ func main() {
 
 	fmt.Println("=== (1) Of END ===")
 
-	fmt.Println("=== (2) Dump BEGIN ===")
-	// (2) dump
+	fmt.Println()
+	fmt.Println("=== (2) CreateTree BEGIN ===")
+
+	// (2.1) create tree
+	t2, err := smt.CreateTree(leafEncodings)
+
+	// (2.2) add leaf
+	fmt.Println("=== (2.2) AddLeaf BEGIN ===")
+	for k, v := range values {
+		leafHash0, err := t2.AddLeaf(v)
+		handleError(err)
+		fmt.Println(k, " AddLeaf: ", hexutil.Encode(leafHash0))
+	}
+	fmt.Println("=== (2.2) AddLeaf END ===")
+
+	// (2.3) make tree
+	fmt.Println("=== (2.3) MakeTree BEGIN ===")
+	r3, err := t2.MakeTree()
+	fmt.Println("MakeTree Root: ", hexutil.Encode(r3))
+	fmt.Println("=== (2.3) MakeTree END ===")
+
+	fmt.Println()
+	// (3) dump
+	fmt.Println("=== (3) Dump BEGIN ===")
 	dump, err := t1.TreeMarshal()
 	handleError(err)
 	fmt.Println(string(dump))
+	fmt.Println("=== (3) Dump END ===")
 
-	fmt.Println("=== (2) Dump END ===")
-
-	fmt.Println("=== (3) Load BEGIN ===")
-	// (3) load
-	t2, err := smt.Load(dump)
+	fmt.Println()
+	// (4) load
+	fmt.Println("=== (4) Load BEGIN ===")
+	t3, err := smt.Load(dump)
 	handleError(err)
 
-	entries := t2.Entries()
+	entries := t3.Entries()
 	for k, v := range entries {
 		if v.Value[0] == smt.SolAddress("0x1111111111111111111111111111111111111111") {
-			proof, err := t2.GetProofWithIndex(k)
+			proof, err := t3.GetProofWithIndex(k)
 			handleError(err)
-			fmt.Println("ValueIndex:", v.ValueIndex, " TreeIndex:", v.TreeIndex, " Hash:", hexutil.Encode(v.Hash), " Value:", v.Value)
+			fmt.Println(fmt.Sprintf("ValueIndex: %v , TreeIndex: %v , Hash: %v ,  Value: %v", v.ValueIndex, v.TreeIndex, hexutil.Encode(v.Hash), v.Value))
 			for pk, pv := range proof {
-				fmt.Println("Proof k:", pk, " v:", hexutil.Encode(pv))
+				fmt.Println(fmt.Sprintf("[%v] = %v", pk, hexutil.Encode(pv)))
 			}
 		}
 	}
-	fmt.Println("=== (3) Load END ===")
+	fmt.Println("=== (4) Load END ===")
 
-	fmt.Println("=== (4) DumpLeafProof BEGIN ===")
+	fmt.Println()
+	// (5) dump leaf proof
+	fmt.Println("=== (5) DumpLeafProof BEGIN ===")
 
-	// (4) dump leaf proof
-	leafProofDump, err := t2.TreeProofMarshal()
+	leafProofDump, err := t3.TreeProofMarshal()
 	handleError(err)
 	fmt.Println(string(leafProofDump))
+	fmt.Println("=== (5) DumpLeafProof END ===")
 
-	fmt.Println("=== (4) DumpLeafProof END ===")
-
-	fmt.Println("=== (5) Verify BEGIN ===")
-	// (5) verify proof
-	firstProof, err := t2.GetProofWithIndex(0)
+	fmt.Println()
+	// (6) verify proof
+	fmt.Println("=== (6) Verify BEGIN ===")
+	firstProof, err := t3.GetProofWithIndex(0)
 	handleError(err)
 	firstValue := entries[0].Value
 
-	verified, err := t2.Verify(firstProof, firstValue)
+	verified, err := t3.Verify(firstProof, firstValue)
 	handleError(err)
 	fmt.Println("Verify:", verified)
-	fmt.Println("=== (5) Verify END ===")
+	fmt.Println("=== (6) Verify END ===")
 
-	//fmt.Println("=== (6) CreateTree BEGIN ===")
+	fmt.Println()
+	// (7)
+	fmt.Println("=== (7) VerifyMultiProof BEGIN ===")
+	mulitProof, err := t3.GetMultiProof([][]interface{}{values[0], values[1]})
+	//t3.VerifyMultiProof()
+	fmt.Println("Proof:")
+	for k, v := range mulitProof.Proof {
+		fmt.Println(fmt.Sprintf("[%v] = %v", k, hexutil.Encode(v)))
+	}
+	//fmt.Println("=== (7.1) Proof END ===")
+	//fmt.Println()
+	fmt.Println("ProofFlags:")
+	//fmt.Println("=== (7.2) ProofFlags BEGIN ===")
+	fmt.Println(mulitProof.ProofFlags)
+	//fmt.Println("=== (7.2) ProofFlags END ===")
+	//fmt.Println()
 
-	// (6) create tree
-	t3, err := smt.CreateTree(leafEncodings)
+	fmt.Println("Values:")
+	for _, v := range mulitProof.Values {
+		fmt.Println(v)
+	}
 
-	//fmt.Println("=== (6) CreateTree END ===")
+	verified, err = t3.VerifyMultiProof(mulitProof)
+	handleError(err)
+	fmt.Println("Verify:", verified)
 
-	fmt.Println("=== (7) AddLeaf BEGIN ===")
-
-	// (7) add leaf
-	leafHash0, err := t3.AddLeaf(values[0])
-	fmt.Println("index: 0 , AddLeaf: ", hexutil.Encode(leafHash0))
-
-	leafHash1, err := t3.AddLeaf(values[1])
-	fmt.Println("index: 1 , AddLeaf: ", hexutil.Encode(leafHash1))
-
-	fmt.Println("=== (7) AddLeaf END ===")
-
-	fmt.Println("=== (8) MakeTree BEGIN ===")
-
-	// (8) make tree
-	r3, err := t3.MakeTree()
-	fmt.Println("(8) MakeTree Root: ", hexutil.Encode(r3))
-
-	fmt.Println("=== (8) MakeTree END ===")
-
+	fmt.Println("=== (7) VerifyMultiProof END ===")
 }
 
 func handleError(err error) {
