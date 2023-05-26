@@ -2,10 +2,14 @@
 
 A Go library to generate merkle trees and merkle proofs.
 
-[![Tag](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
 [![License](https://img.shields.io/github/license/FantasyJony/openzeppelin-merkle-tree-go)](https://opensource.org/licenses/Apache-2.0)
+[![Tag](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
 [![Go version](https://img.shields.io/github/go-mod/go-version/FantasyJony/openzeppelin-merkle-tree-go)](https://golang.org/dl/#stable)
 [![Go Reference](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
+
+[![Hardhat](https://img.shields.io/node/v/hardhat)](https://hardhat.org/docs)
+[![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
+[![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
 
 ## @openzeppelin/merkle-tree
 
@@ -26,13 +30,13 @@ go mod tidy
 
 ```go
 package main
-    
+
 import (
-    "fmt"
-    smt "github.com/FantasyJony/openzeppelin-merkle-tree-go/standard_merkle_tree"
-    "github.com/ethereum/go-ethereum/common/hexutil"
+	"fmt"
+	smt "github.com/FantasyJony/openzeppelin-merkle-tree-go/standard_merkle_tree"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
-    
+
 func main() {
     
     values := [][]interface{}{
@@ -43,6 +47,14 @@ func main() {
         {
             smt.SolAddress("0x2222222222222222222222222222222222222222"),
             smt.SolNumber("2500000000000000000"),
+        },
+        {
+            smt.SolAddress("0x3333333333333333333333333333333333333333"),
+            smt.SolNumber("1500000000000000000"),
+        },
+        {
+            smt.SolAddress("0x4444444444444444444444444444444444444444"),
+            smt.SolNumber("1000000000000000000"),
         },
     }
     
@@ -60,89 +72,141 @@ func main() {
     
     fmt.Println("=== (1) Of END ===")
     
-    fmt.Println("=== (2) Dump BEGIN ===")
-    // (2) dump
+    fmt.Println()
+    fmt.Println("=== (2) CreateTree BEGIN ===")
+    
+    // (2.1) create tree
+    t2, err := smt.CreateTree(leafEncodings)
+    
+    // (2.2) add leaf
+    fmt.Println("=== (2.2) AddLeaf BEGIN ===")
+    for k, v := range values {
+        leafHash0, err := t2.AddLeaf(v)
+        handleError(err)
+        fmt.Println(k, " AddLeaf: ", hexutil.Encode(leafHash0))
+    }
+    fmt.Println("=== (2.2) AddLeaf END ===")
+    
+    // (2.3) make tree
+    fmt.Println("=== (2.3) MakeTree BEGIN ===")
+    r3, err := t2.MakeTree()
+    fmt.Println("MakeTree Root: ", hexutil.Encode(r3))
+    fmt.Println("=== (2.3) MakeTree END ===")
+    
+    fmt.Println()
+    // (3) dump
+    fmt.Println("=== (3) Dump BEGIN ===")
     dump, err := t1.TreeMarshal()
     handleError(err)
     fmt.Println(string(dump))
+    fmt.Println("=== (3) Dump END ===")
     
-    fmt.Println("=== (2) Dump END ===")
-    
-    fmt.Println("=== (3) Load BEGIN ===")
-    // (3) load
-    t2, err := smt.Load(dump)
+    fmt.Println()
+    // (4) load
+    fmt.Println("=== (4) Load BEGIN ===")
+    t3, err := smt.Load(dump)
     handleError(err)
     
-    entries := t2.Entries()
+    entries := t3.Entries()
     for k, v := range entries {
         if v.Value[0] == smt.SolAddress("0x1111111111111111111111111111111111111111") {
-            proof, err := t2.GetProofWithIndex(k)
+            proof, err := t3.GetProofWithIndex(k)
             handleError(err)
-            fmt.Println("ValueIndex:", v.ValueIndex, " TreeIndex:", v.TreeIndex, " Hash:", hexutil.Encode(v.Hash), " Value:", v.Value)
+            fmt.Println(fmt.Sprintf("ValueIndex: %v , TreeIndex: %v , Hash: %v ,  Value: %v", v.ValueIndex, v.TreeIndex, hexutil.Encode(v.Hash), v.Value))
             for pk, pv := range proof {
-                fmt.Println("Proof k:", pk, " v:", hexutil.Encode(pv))
+                fmt.Println(fmt.Sprintf("[%v] = %v", pk, hexutil.Encode(pv)))
             }
         }
     }
 	
-    fmt.Println("=== (3) Load END ===")
+    fmt.Println("=== (4) Load END ===")
     
-    fmt.Println("=== (4) DumpLeafProof BEGIN ===")
+    fmt.Println()
+    // (5) dump leaf proof
+    fmt.Println("=== (5) DumpLeafProof BEGIN ===")
     
-    // (4) dump leaf proof
-    leafProofDump, err := t2.TreeProofMarshal()
+    leafProofDump, err := t3.TreeProofMarshal()
     handleError(err)
     fmt.Println(string(leafProofDump))
+    fmt.Println("=== (5) DumpLeafProof END ===")
     
-    fmt.Println("=== (4) DumpLeafProof END ===")
-    
-    fmt.Println("=== (5) Verify BEGIN ===")
-    // (5) verify proof
-    firstProof, err := t2.GetProofWithIndex(0)
+    fmt.Println()
+    // (6) verify proof
+    fmt.Println("=== (6) Verify BEGIN ===")
+    firstProof, err := t3.GetProofWithIndex(0)
     handleError(err)
     firstValue := entries[0].Value
     
-    verified, err := t2.Verify(firstProof, firstValue)
+    verified, err := t3.Verify(firstProof, firstValue)
     handleError(err)
     fmt.Println("Verify:", verified)
-    fmt.Println("=== (5) Verify END ===")
+    fmt.Println("=== (6) Verify END ===")
     
-    //fmt.Println("=== (6) CreateTree BEGIN ===")
+    fmt.Println()
+    // (7)
+    fmt.Println("=== (7) VerifyMultiProof BEGIN ===")
+    mulitProof, err := t3.GetMultiProof([][]interface{}{values[0], values[1]})
+	
+    fmt.Println("Proof:")
+    for k, v := range mulitProof.Proof {
+        fmt.Println(fmt.Sprintf("[%v] = %v", k, hexutil.Encode(v)))
+    }
+	
+    fmt.Println("ProofFlags:")
+    fmt.Println(mulitProof.ProofFlags)
     
-    // (6) create tree
-    t3, err := smt.CreateTree(leafEncodings)
+    fmt.Println("Values:")
+    for _, v := range mulitProof.Values {
+        fmt.Println(v)
+    }
     
-    //fmt.Println("=== (6) CreateTree END ===")
+    verified, err = t3.VerifyMultiProof(mulitProof)
+    handleError(err)
+    fmt.Println("Verify:", verified)
     
-    fmt.Println("=== (7) AddLeaf BEGIN ===")
-    
-    // (7) add leaf
-    leafHash0, err := t3.AddLeaf(values[0])
-    fmt.Println("index: 0 , AddLeaf: ", hexutil.Encode(leafHash0))
-    
-    leafHash1, err := t3.AddLeaf(values[1])
-    fmt.Println("index: 1 , AddLeaf: ", hexutil.Encode(leafHash1))
-    
-    fmt.Println("=== (7) AddLeaf END ===")
-    
-    fmt.Println("=== (8) MakeTree BEGIN ===")
-    
-    // (8) make tree
-    r3, err := t3.MakeTree()
-    fmt.Println("(8) MakeTree Root: ", hexutil.Encode(r3))
-    
-    fmt.Println("=== (8) MakeTree END ===")
+    fmt.Println("=== (7) VerifyMultiProof END ===")
 }
-    
+
 func handleError(err error) {
     if err != nil {
         panic(err)
     }
 }
-
 ```
 
-## API & Examples
+Run: [main_run.txt](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/main_run.txt)
+
+## Dump
+
+TreeMarshal: [tree.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_tree.json)
+
+TreeProofMarshal:[proof.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_proof.json)
+
+
+## Solidity
+
+### hardhat
+```
+cd merkle-tree-contracts
+npm install
+npx hardhat test
+```
+
+```
+  StandardMerkleTree
+    Merkle Tree
+      ✔ verify (597ms)
+      ✔ verifyMultiProof
+
+
+  2 passing (613ms)
+```
+
+contracts: [StandardMerkleTree.sol](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/merkle-tree-contracts/contracts/StandardMerkleTree.sol)
+
+test: [StandardMerkleTree.ts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/merkle-tree-contracts/test/StandardMerkleTree.ts)
+
+## API
 
 ### `import smt`
 
@@ -388,77 +452,4 @@ value := []interface{}{
     smt.SolNumber("5000000000000000000"),
 }
 leafHash, err := tree.LeafHash(value)
-```
-
-
-## Dump
-
-### `TreeMarshal`
-
-```json
-{
-    "format": "standard-v1",
-    "tree": [
-        "0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77",
-        "0xeb02c421cfa48976e66dfb29120745909ea3a0f843456c263cf8f1253483e283",
-        "0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc"
-    ],
-    "values": [
-        {
-            "value": [
-                "0x1111111111111111111111111111111111111111",
-                "5000000000000000000"
-            ],
-            "treeIndex": 1
-        },
-        {
-            "value": [
-                "0x2222222222222222222222222222222222222222",
-                "2500000000000000000"
-            ],
-            "treeIndex": 2
-        }
-    ],
-    "leafEncoding": [
-        "address",
-        "uint256"
-    ]
-}
-```
-
-### `TreeProofMarshal`
-```json
-{
-    "root": "0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77",
-    "leafEncoding": [
-        "address",
-        "uint256"
-    ],
-    "leafProof": [
-        {
-            "value": [
-                "0x1111111111111111111111111111111111111111",
-                "5000000000000000000"
-            ],
-            "proof": [
-                "0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc"
-            ]
-        },
-        {
-            "value": [
-                "0x2222222222222222222222222222222222222222",
-                "2500000000000000000"
-            ],
-            "proof": [
-                "0xeb02c421cfa48976e66dfb29120745909ea3a0f843456c263cf8f1253483e283"
-            ]
-        }
-    ]
-}
-```
-
-## Solidity Leaf Hash
-
-```solidity
-bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(addr, amount))));
 ```
