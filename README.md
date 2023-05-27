@@ -7,16 +7,6 @@ A Go library to generate merkle trees and merkle proofs.
 [![Go version](https://img.shields.io/github/go-mod/go-version/FantasyJony/openzeppelin-merkle-tree-go)](https://golang.org/dl/#stable)
 [![Go Reference](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
 
-[![Hardhat](https://img.shields.io/node/v/hardhat)](https://hardhat.org/docs)
-[![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
-[![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
-
-## @openzeppelin/merkle-tree
-
-fork from [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
-
-contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/utils#MerkleProof)
-
 ## Installation
 ```
 go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.1.0
@@ -25,6 +15,16 @@ go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.1.0
 ```
 go mod tidy
 ```
+
+## Solidity
+
+[![Hardhat](https://img.shields.io/node/v/hardhat)](https://hardhat.org/docs)
+[![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
+[![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
+
+fork from [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
+
+contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/utils#MerkleProof)
 
 ## Example
 
@@ -182,9 +182,8 @@ TreeMarshal: [dump_tree.json](https://github.com/FantasyJony/openzeppelin-merkle
 
 TreeProofMarshal: [dump_proof.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_proof.json)
 
-## Solidity
+## Hardhat
 
-### hardhat
 ```
 cd merkle-tree-contracts
 npm install
