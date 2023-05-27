@@ -192,16 +192,6 @@ npm install
 npx hardhat test
 ```
 
-```
-  StandardMerkleTree
-    Merkle Tree
-      ✔ verify (597ms)
-      ✔ verifyMultiProof
-
-
-  2 passing (613ms)
-```
-
 ## Go API
 
 ### `import smt`
