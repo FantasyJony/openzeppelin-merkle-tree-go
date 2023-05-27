@@ -1,11 +1,14 @@
 # Openzeppelin Standard Tree Go
 
+Fork [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
+
 A Go library to generate merkle trees and merkle proofs.
 
-[![License](https://img.shields.io/github/license/FantasyJony/openzeppelin-merkle-tree-go)](https://opensource.org/licenses/Apache-2.0)
 [![Tag](https://img.shields.io/github/v/tag/FantasyJony/openzeppelin-merkle-tree-go?sort=semver)](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tags)
 [![Go version](https://img.shields.io/github/go-mod/go-version/FantasyJony/openzeppelin-merkle-tree-go)](https://golang.org/dl/#stable)
 [![Go Reference](https://pkg.go.dev/badge/github.com/FantasyJony/openzeppelin-merkle-tree-go.svg)](https://pkg.go.dev/github.com/FantasyJony/openzeppelin-merkle-tree-go)
+[![License](https://img.shields.io/github/license/FantasyJony/openzeppelin-merkle-tree-go)](https://opensource.org/licenses/Apache-2.0)
+
 
 ## Installation
 ```
@@ -16,15 +19,7 @@ go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.1.0
 go mod tidy
 ```
 
-## Solidity
-
-[![Hardhat](https://img.shields.io/node/v/hardhat)](https://hardhat.org/docs)
-[![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
-[![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
-
-### Fork [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
-
-## Go Example
+## Example
 
 ```go
 package main
@@ -180,7 +175,15 @@ TreeMarshal: [dump_tree.json](https://github.com/FantasyJony/openzeppelin-merkle
 
 TreeProofMarshal: [dump_proof.json](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/docs/dump_proof.json)
 
-## Hardhat
+
+## Solidity
+
+[![Hardhat](https://img.shields.io/node/v/hardhat)](https://hardhat.org/docs)
+[![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
+[![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
+
+### Example [merkle-tree-contracts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tree/main/merkle-tree-contracts)
+### Hardhat
 
 ```
 cd merkle-tree-contracts
@@ -197,10 +200,6 @@ npx hardhat test
 
   2 passing (613ms)
 ```
-
-contracts: [StandardMerkleTree.sol](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/merkle-tree-contracts/contracts/StandardMerkleTree.sol)
-
-test: [StandardMerkleTree.ts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/merkle-tree-contracts/test/StandardMerkleTree.ts)
 
 ## Go API
 
