@@ -182,7 +182,8 @@ TreeProofMarshal: [dump_proof.json](https://github.com/FantasyJony/openzeppelin-
 [![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
 [![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
 
-### Example [merkle-tree-contracts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tree/main/merkle-tree-contracts)
+Example [merkle-tree-contracts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/tree/main/merkle-tree-contracts)
+
 ### Hardhat
 
 ```
