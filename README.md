@@ -22,11 +22,9 @@ go mod tidy
 [![@openzeppelin/contracts](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/merkle-tree?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/openzeppelin-contracts)
 [![@openzeppelin/merkle-tree](https://img.shields.io/github/package-json/dependency-version/FantasyJony/openzeppelin-merkle-tree-go/@openzeppelin/contracts?filename=merkle-tree-contracts%2Fpackage.json)](https://github.com/OpenZeppelin/merkle-tree)
 
-fork from [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
+### Fork [@openzeppelin/merkle-tree](https://github.com/OpenZeppelin/merkle-tree)
 
-contracts doc [MerkleProof](https://docs.openzeppelin.com/contracts/4.x/api/utils#MerkleProof)
-
-## Example
+## Go Example
 
 ```go
 package main
@@ -204,7 +202,7 @@ contracts: [StandardMerkleTree.sol](https://github.com/FantasyJony/openzeppelin-
 
 test: [StandardMerkleTree.ts](https://github.com/FantasyJony/openzeppelin-merkle-tree-go/blob/main/merkle-tree-contracts/test/StandardMerkleTree.ts)
 
-## API
+## Go API
 
 ### `import smt`
 
