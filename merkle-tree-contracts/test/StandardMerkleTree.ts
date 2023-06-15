@@ -2,6 +2,7 @@ import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 describe("StandardMerkleTree", function () {
 
@@ -53,6 +54,17 @@ describe("StandardMerkleTree", function () {
 
       expect(await standardMerkleTree.multiProofVerify(proof, proofFlags ,root, accounts, amounts)).to.equal(true);
     });
+
+    // it("array",  async function () {
+    //   // const { standardMerkleTree } = await loadFixture(deployFixture)
+    //   const values = [
+    //     ["0x1111111111111111111111111111111111111111", ["5000000000000000000","2500000000000000000"],[true,false]],
+    //     ["0x2222222222222222222222222222222222222222", ["2500000000000000000","5000000000000000000"],[false,true]]
+    //   ];
+    //   const tree = StandardMerkleTree.of(values, ["address","uint256[]","bool[]"])
+    //   console.log('Merkle Root:', tree.root);
+    //   console.log(tree.dump())
+    // })
 
   });
 });

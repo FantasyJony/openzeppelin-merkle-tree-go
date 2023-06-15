@@ -389,3 +389,69 @@ func TestDumpLeafProof(t *testing.T) {
 	}
 	fmt.Println(string(proofJson))
 }
+
+func TestArrayArg(t *testing.T) {
+
+	values := [][]interface{}{
+		{
+			SolAddress("0x1111111111111111111111111111111111111111"),
+			SolNumberArray([]interface{}{
+				"5000000000000000000", "2500000000000000000",
+			}),
+			SolBoolArray([]interface{}{
+				true,
+				false,
+			}),
+		},
+		{
+			SolAddress("0x2222222222222222222222222222222222222222"),
+			SolNumberArray([]interface{}{
+				"2500000000000000000", "5000000000000000000",
+			}),
+			SolBoolArray([]interface{}{
+				false,
+				true,
+			}),
+		},
+	}
+
+	tree, err := Of(
+		values,
+		[]string{
+			SOL_ADDRESS,
+			SOL_UINT256_ARRAY,
+			SOL_BOOL_ARRAY,
+		})
+
+	if err != nil {
+		fmt.Println("Of ERR: ", err)
+	}
+
+	root := hexutil.Encode(tree.GetRoot())
+	fmt.Println("01 Merkle Root: ", root)
+
+	proof, err := tree.GetProof(values[0])
+	strProof := make([]string, len(proof))
+	if err != nil {
+		fmt.Println("GetProof ERR", err)
+	}
+	for _, v := range proof {
+		strProof = append(strProof, hexutil.Encode(v))
+	}
+	fmt.Println("02 proof: ", strProof)
+
+	fmt.Println("03 TreeMarshal")
+	value, err := tree.TreeMarshal()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(value))
+
+	fmt.Println("04 TreeUnmarshal")
+	tree2, err := TreeUnmarshal(value)
+	value2, err := tree2.TreeMarshal()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(value2))
+}
