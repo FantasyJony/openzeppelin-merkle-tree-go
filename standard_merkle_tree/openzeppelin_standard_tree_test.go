@@ -72,6 +72,16 @@ func TestSMTOf(t *testing.T) {
 
 	root := hexutil.Encode(tree.GetRoot())
 	fmt.Println("Merkle Root: ", root)
+
+	proof, err := tree.GetProof(leaf1)
+	strProof := make([]string, len(proof))
+	if err != nil {
+		fmt.Println("GetProof ERR", err)
+	}
+	for _, v := range proof {
+		strProof = append(strProof, hexutil.Encode(v))
+	}
+	fmt.Println("02 proof: ", strProof)
 }
 
 func TestSMTVerify(t *testing.T) {
@@ -336,12 +346,14 @@ func TestDumpLeafProof(t *testing.T) {
 
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
-		SolNumber("5000000000000000000"),
+		//SolNumber("5000000000000000000"),
+		SolNumber("500"),
 	}
 
 	leaf2 := []interface{}{
 		SolAddress("0x2222222222222222222222222222222222222222"),
-		SolNumber("2500000000000000000"),
+		//SolNumber("2500000000000000000"),
+		SolNumber("250"),
 	}
 
 	leaves := [][]interface{}{
@@ -353,7 +365,7 @@ func TestDumpLeafProof(t *testing.T) {
 		leaves,
 		[]string{
 			SOL_ADDRESS,
-			SOL_UINT256,
+			SOL_UINT8,
 		})
 
 	if err != nil {
@@ -422,6 +434,73 @@ func TestArrayArg(t *testing.T) {
 			SOL_UINT256_ARRAY,
 			SOL_BOOL_ARRAY,
 		})
+
+	if err != nil {
+		fmt.Println("Of ERR: ", err)
+	}
+
+	root := hexutil.Encode(tree.GetRoot())
+	fmt.Println("01 Merkle Root: ", root)
+
+	proof, err := tree.GetProof(values[0])
+	strProof := make([]string, len(proof))
+	if err != nil {
+		fmt.Println("GetProof ERR", err)
+	}
+	for _, v := range proof {
+		strProof = append(strProof, hexutil.Encode(v))
+	}
+	fmt.Println("02 proof: ", strProof)
+
+	fmt.Println("03 TreeMarshal")
+	value, err := tree.TreeMarshal()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(value))
+
+	fmt.Println("04 TreeUnmarshal")
+	tree2, err := TreeUnmarshal(value)
+	value2, err := tree2.TreeMarshal()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(value2))
+}
+
+func TestAbiArg(t *testing.T) {
+	values := [][]interface{}{
+		{
+			SolAddress("0x1111111111111111111111111111111111111111"),
+			SolNumber("1"),
+			SolNumber("2"),
+			SolNumber("3"),
+			//SolNumberArray([]interface{}{
+			//	"1", "2", "3",
+			//}),
+		},
+		{
+			SolAddress("0x1111111111111111111111111111111111111111"),
+			SolNumber("0"),
+			SolNumber("2"),
+			SolNumber("1"),
+			//SolNumberArray([]interface{}{
+			//	"0", "1", "2",
+			//}),
+		},
+	}
+
+	leafEncodings := []string{
+		SOL_ADDRESS,
+		SOL_UINT8,
+		SOL_UINT88,
+		SOL_UINT128,
+		//SOL_UINT8_ARRAY,
+	}
+
+	tree, err := Of(
+		values,
+		leafEncodings)
 
 	if err != nil {
 		fmt.Println("Of ERR: ", err)

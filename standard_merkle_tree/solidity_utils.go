@@ -12,6 +12,7 @@ func Keccak256(value []byte) ([]byte, error) {
 }
 
 func AbiPack(types []string, values ...interface{}) ([]byte, error) {
+	values = abiArgConvert(types, values...)
 	var args abi.Arguments
 	for _, v := range types {
 		typ, err := abi.NewType(v, "string", nil)

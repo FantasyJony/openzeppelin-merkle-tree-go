@@ -30,7 +30,7 @@ type LeafValue struct {
 func (l *LeafValue) getSolValueMarshal(leafEncoding []string) []interface{} {
 	values := make([]interface{}, len(leafEncoding))
 	for k, v := range leafEncoding {
-		values[k] = SolValueMarshal(l.Value[k], v)
+		values[k] = ToJsonValue(l.Value[k], v)
 	}
 	return values
 }
@@ -49,7 +49,7 @@ type StandardValueData struct {
 func (svd *StandardValueData) getSolValueUnmarshal(leafEncoding []string) []interface{} {
 	values := make([]interface{}, len(svd.Value))
 	for k, v := range svd.Value {
-		values[k] = SolValueUnmarshal(v, leafEncoding[k])
+		values[k] = ToSolValue(v, leafEncoding[k])
 	}
 	return values
 }
@@ -69,7 +69,7 @@ type StandardMerkleLeafProofData struct {
 func (lpd *StandardMerkleLeafProofData) getSolValueUnmarshal(leafEncoding []string) []interface{} {
 	values := make([]interface{}, len(leafEncoding))
 	for k, v := range leafEncoding {
-		values[k] = SolValueUnmarshal(lpd.Value[k], v)
+		values[k] = ToSolValue(lpd.Value[k], v)
 	}
 	return values
 }
