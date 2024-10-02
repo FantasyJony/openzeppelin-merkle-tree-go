@@ -41,9 +41,6 @@ func makeMerkleTree(leaves [][]byte) ([][]byte, error) {
 	if len(leaves) == 0 {
 		return nil, errors.New("Expected non-zero number of leaves")
 	}
-	sort.Slice(leaves, func(i, j int) bool {
-		return compareBytes(leaves[i], leaves[j])
-	})
 	for _, v := range leaves {
 		err := checkValidMerkleNode(v)
 		if err != nil {
