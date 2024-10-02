@@ -16,7 +16,7 @@ A Go library to generate merkle trees and merkle proofs.
 
 ## Installation
 ```
-go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.1.2
+go get github.com/FantasyJony/openzeppelin-merkle-tree-go@v1.1.3
 ```
 
 ```
