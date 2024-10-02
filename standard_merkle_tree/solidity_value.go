@@ -428,13 +428,7 @@ func abiArgConvert(types []string, values ...interface{}) []interface{} {
 				}
 			}
 			break
-		case SOL_STRING:
-			{
-
-			}
-			break
 		}
-
 	}
 	return values
 }
