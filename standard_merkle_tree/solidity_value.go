@@ -45,12 +45,16 @@ func SolBytesArray(value []interface{}) [][]byte {
 	return list
 }
 
-func SolString(value string) []byte {
-	return SolBytes(value)
+func SolString(value string) string {
+	return value
 }
 
-func SolStringArray(value []interface{}) [][]byte {
-	return SolBytesArray(value)
+func SolStringArray(value []interface{}) []string {
+	list := make([]string, len(value))
+	for k, v := range value {
+		list[k] = SolString(v.(string))
+	}
+	return list
 }
 
 func SolBool(value bool) bool {
@@ -424,7 +428,13 @@ func abiArgConvert(types []string, values ...interface{}) []interface{} {
 				}
 			}
 			break
+		case SOL_STRING:
+			{
+
+			}
+			break
 		}
+
 	}
 	return values
 }

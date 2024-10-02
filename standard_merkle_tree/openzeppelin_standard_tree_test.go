@@ -534,3 +534,32 @@ func TestAbiArg(t *testing.T) {
 	}
 	fmt.Println(string(value2))
 }
+
+func TestStringArg(t *testing.T) {
+
+	values := [][]interface{}{
+		{
+			SolString("a"),
+		},
+		{
+			SolString("b"),
+		},
+		{
+			SolString("c"),
+		},
+		{
+			SolString("d"),
+		},
+	}
+
+	leafEncodings := []string{
+		SOL_STRING,
+	}
+
+	t1, err := Of(values, leafEncodings)
+	if err != nil {
+		println("error:", err.Error())
+		return
+	}
+	fmt.Println("Root: ", hexutil.Encode(t1.GetRoot()))
+}

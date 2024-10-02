@@ -83,5 +83,27 @@ describe("StandardMerkleTree", function () {
       console.log(tree.dump())
     })
 
+    it("string",  async function () {
+      const values = [
+        [
+          "a",
+        ],
+        [
+           "b",
+        ],
+        [
+          "c",
+        ],
+        [
+          "d",
+        ],
+      ];
+      const tree = StandardMerkleTree.of(values, [
+        "string",
+      ])
+      console.log('Merkle Root:', tree.root);
+      console.log(tree.dump())
+    })
+
   });
 });
