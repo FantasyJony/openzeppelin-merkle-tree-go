@@ -355,13 +355,11 @@ func TestDumpLeafProof(t *testing.T) {
 
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
-		//SolNumber("5000000000000000000"),
 		SolNumber("500"),
 	}
 
 	leaf2 := []interface{}{
 		SolAddress("0x2222222222222222222222222222222222222222"),
-		//SolNumber("2500000000000000000"),
 		SolNumber("250"),
 	}
 
@@ -395,7 +393,11 @@ func TestDumpLeafProof(t *testing.T) {
 		for a, b := range v.Proof {
 			bProof[a], _ = hexutil.Decode(b)
 		}
-		r, err := tree.Verify(bProof, v.getSolValueUnmarshal(proof.LeafEncoding))
+		solVal, err := v.getSolValueUnmarshal(proof.LeafEncoding)
+		if err != nil {
+			t.Fatal("getSolValueUnmarshal error:", err)
+		}
+		r, err := tree.Verify(bProof, solVal)
 		if err != nil {
 			t.Fatal("Verify error:", err)
 		}

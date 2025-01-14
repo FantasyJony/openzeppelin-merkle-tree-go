@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -212,11 +213,14 @@ func ToJsonValue(value interface{}, leafEncoding string) (interface{}, error) {
 		}
 	case SOL_INT8, SOL_INT16, SOL_INT24, SOL_INT32, SOL_INT40, SOL_INT48, SOL_INT56, SOL_INT64, SOL_INT72, SOL_INT80, SOL_INT88, SOL_INT96, SOL_INT104, SOL_INT112, SOL_INT120, SOL_INT128, SOL_INT136, SOL_INT144, SOL_INT152, SOL_INT160, SOL_INT168, SOL_INT176, SOL_INT184, SOL_INT192, SOL_INT200, SOL_INT208, SOL_INT216, SOL_INT224, SOL_INT232, SOL_INT240, SOL_INT248, SOL_INT256:
 		{
-			instance, ok := value.(*big.Int)
-			if !ok {
-				return nil, fmt.Errorf("failed to cast value to *big.Int")
+			switch tv := value.(type) {
+			case *big.Int:
+				return tv.String(), nil
+			case uint8:
+				return strconv.FormatUint(uint64(tv), 10), nil
+			default:
+				return nil, fmt.Errorf("failed to cast value to to %s: %T", leafEncoding, value)
 			}
-			return instance.String(), nil
 		}
 	case SOL_INT8_ARRAY, SOL_INT16_ARRAY, SOL_INT24_ARRAY, SOL_INT32_ARRAY, SOL_INT40_ARRAY, SOL_INT48_ARRAY, SOL_INT56_ARRAY, SOL_INT64_ARRAY, SOL_INT72_ARRAY, SOL_INT80_ARRAY, SOL_INT88_ARRAY, SOL_INT96_ARRAY, SOL_INT104_ARRAY, SOL_INT112_ARRAY, SOL_INT120_ARRAY, SOL_INT128_ARRAY, SOL_INT136_ARRAY, SOL_INT144_ARRAY, SOL_INT152_ARRAY, SOL_INT160_ARRAY, SOL_INT168_ARRAY, SOL_INT176_ARRAY, SOL_INT184_ARRAY, SOL_INT192_ARRAY, SOL_INT200_ARRAY, SOL_INT208_ARRAY, SOL_INT216_ARRAY, SOL_INT224_ARRAY, SOL_INT232_ARRAY, SOL_INT240_ARRAY, SOL_INT248_ARRAY, SOL_INT256_ARRAY:
 		{
@@ -232,11 +236,14 @@ func ToJsonValue(value interface{}, leafEncoding string) (interface{}, error) {
 		}
 	case SOL_UINT8, SOL_UINT16, SOL_UINT24, SOL_UINT32, SOL_UINT40, SOL_UINT48, SOL_UINT56, SOL_UINT64, SOL_UINT72, SOL_UINT80, SOL_UINT88, SOL_UINT96, SOL_UINT104, SOL_UINT112, SOL_UINT120, SOL_UINT128, SOL_UINT136, SOL_UINT144, SOL_UINT152, SOL_UINT160, SOL_UINT168, SOL_UINT176, SOL_UINT184, SOL_UINT192, SOL_UINT200, SOL_UINT208, SOL_UINT216, SOL_UINT224, SOL_UINT232, SOL_UINT240, SOL_UINT248, SOL_UINT256:
 		{
-			instance, ok := value.(*big.Int)
-			if !ok {
-				return nil, fmt.Errorf("failed to cast value to *big.Int")
+			switch tv := value.(type) {
+			case *big.Int:
+				return tv.String(), nil
+			case uint8:
+				return strconv.FormatUint(uint64(tv), 10), nil
+			default:
+				return nil, fmt.Errorf("failed to cast value to to %s: %T", leafEncoding, value)
 			}
-			return instance.String(), nil
 		}
 	case SOL_UINT8_ARRAY, SOL_UINT16_ARRAY, SOL_UINT24_ARRAY, SOL_UINT32_ARRAY, SOL_UINT40_ARRAY, SOL_UINT48_ARRAY, SOL_UINT56_ARRAY, SOL_UINT64_ARRAY, SOL_UINT72_ARRAY, SOL_UINT80_ARRAY, SOL_UINT88_ARRAY, SOL_UINT96_ARRAY, SOL_UINT104_ARRAY, SOL_UINT112_ARRAY, SOL_UINT120_ARRAY, SOL_UINT128_ARRAY, SOL_UINT136_ARRAY, SOL_UINT144_ARRAY, SOL_UINT152_ARRAY, SOL_UINT160_ARRAY, SOL_UINT168_ARRAY, SOL_UINT176_ARRAY, SOL_UINT184_ARRAY, SOL_UINT192_ARRAY, SOL_UINT200_ARRAY, SOL_UINT208_ARRAY, SOL_UINT216_ARRAY, SOL_UINT224_ARRAY, SOL_UINT232_ARRAY, SOL_UINT240_ARRAY, SOL_UINT248_ARRAY, SOL_UINT256_ARRAY:
 		{
@@ -314,11 +321,14 @@ func abiArgConvert(types []string, values ...interface{}) ([]interface{}, error)
 		switch v {
 		case SOL_UINT8:
 			{
-				instance, ok := values[k].(*big.Int)
-				if !ok {
-					return nil, fmt.Errorf("failed to cast value at index %d to *big.Int for uint8", k)
+				switch tv := values[k].(type) {
+				case *big.Int:
+					values[k] = uint8(tv.Uint64())
+				case uint8:
+					values[k] = uint8(tv)
+				default:
+					return nil, fmt.Errorf("failed to cast value to to %s: %T", v, values[k])
 				}
-				values[k] = uint8(instance.Uint64())
 			}
 		case SOL_UINT16:
 			{
