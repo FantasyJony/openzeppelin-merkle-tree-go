@@ -3,10 +3,11 @@ package standard_merkle_tree
 import (
 	"bytes"
 	"fmt"
+	"sort"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	json_iterator "github.com/json-iterator/go"
 	"github.com/pkg/errors"
-	"sort"
 )
 
 var (
@@ -27,12 +28,16 @@ type LeafValue struct {
 	Value      []interface{}
 }
 
-func (l *LeafValue) getSolValueMarshal(leafEncoding []string) []interface{} {
+func (l *LeafValue) getSolValueMarshal(leafEncoding []string) ([]interface{}, error) {
 	values := make([]interface{}, len(leafEncoding))
+	var err error
 	for k, v := range leafEncoding {
-		values[k] = ToJsonValue(l.Value[k], v)
+		values[k], err = ToJsonValue(l.Value[k], v)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return values
+	return values, nil
 }
 
 type ValueMultiProof struct {
@@ -46,12 +51,16 @@ type StandardValueData struct {
 	TreeIndex int           `json:"treeIndex"`
 }
 
-func (svd *StandardValueData) getSolValueUnmarshal(leafEncoding []string) []interface{} {
+func (svd *StandardValueData) getSolValueUnmarshal(leafEncoding []string) ([]interface{}, error) {
 	values := make([]interface{}, len(svd.Value))
+	var err error
 	for k, v := range svd.Value {
-		values[k] = ToSolValue(v, leafEncoding[k])
+		values[k], err = ToSolValue(v, leafEncoding[k])
+		if err != nil {
+			return nil, err
+		}
 	}
-	return values
+	return values, nil
 }
 
 type StandardMerkleTreeData struct {
@@ -66,12 +75,16 @@ type StandardMerkleLeafProofData struct {
 	Proof []string      `json:"proof"`
 }
 
-func (lpd *StandardMerkleLeafProofData) getSolValueUnmarshal(leafEncoding []string) []interface{} {
+func (lpd *StandardMerkleLeafProofData) getSolValueUnmarshal(leafEncoding []string) ([]interface{}, error) {
 	values := make([]interface{}, len(leafEncoding))
+	var err error
 	for k, v := range leafEncoding {
-		values[k] = ToSolValue(lpd.Value[k], v)
+		values[k], err = ToSolValue(lpd.Value[k], v)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return values
+	return values, nil
 }
 
 type StandardMerkleTreeProofData struct {
@@ -390,9 +403,13 @@ func (st *StandardTree) Dump() *StandardMerkleTreeData {
 	}
 	valueData := make([]*StandardValueData, len(st.leaves))
 	for k, v := range st.leaves {
+		value, err := v.getSolValueMarshal(st.leafEncodings)
+		if err != nil {
+			panic(err)
+		}
 		valueData[k] = &StandardValueData{
 			TreeIndex: v.TreeIndex,
-			Value:     v.getSolValueMarshal(st.leafEncodings),
+			Value:     value,
 		}
 	}
 	return &StandardMerkleTreeData{
@@ -416,7 +433,10 @@ func TreeUnmarshal(value []byte) (*StandardTree, error) {
 	}
 	values := make([][]interface{}, len(std.Values))
 	for k, v := range std.Values {
-		values[k] = v.getSolValueUnmarshal(std.LeafEncoding)
+		values[k], err = v.getSolValueUnmarshal(std.LeafEncoding)
+		if err != nil {
+			return nil, err
+		}
 	}
 	tree, err := Of(values, std.LeafEncoding)
 	return tree, err
@@ -429,7 +449,10 @@ func Load(value []byte) (*StandardTree, error) {
 func (st *StandardTree) DumpLeafProof() (*StandardMerkleTreeProofData, error) {
 	leafProofData := make([]*StandardMerkleLeafProofData, len(st.leaves))
 	for k, v := range st.leaves {
-		values := v.getSolValueMarshal(st.leafEncodings)
+		values, err := v.getSolValueMarshal(st.leafEncodings)
+		if err != nil {
+			return nil, err
+		}
 		leafProof, err := st.GetProof(v.Value)
 		if err != nil {
 			return nil, err
