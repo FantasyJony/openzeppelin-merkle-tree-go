@@ -2,8 +2,9 @@ package standard_merkle_tree
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func SolAddress(value string) common.Address {
@@ -32,15 +33,22 @@ func SolNumberArray(value []interface{}) []*big.Int {
 	return list
 }
 
-func SolBytes(value string) []byte {
-	r, _ := hex.DecodeString(value)
+func SolBytes(value []byte) []byte {
+	return value
+}
+
+func SolBytesFromHex(value string) []byte {
+	r, err := hex.DecodeString(value)
+	if err != nil {
+		panic(err)
+	}
 	return r
 }
 
 func SolBytesArray(value []interface{}) [][]byte {
 	list := make([][]byte, len(value))
 	for k, v := range value {
-		list[k] = SolBytes(v.(string))
+		list[k] = SolBytesFromHex(v.(string))
 	}
 	return list
 }
@@ -117,8 +125,12 @@ func ToSolValue(value interface{}, leafEncoding string) interface{} {
 		}
 	case SOL_BYTES1, SOL_BYTES2, SOL_BYTES3, SOL_BYTES4, SOL_BYTES5, SOL_BYTES6, SOL_BYTES7, SOL_BYTES8, SOL_BYTES9, SOL_BYTES10, SOL_BYTES11, SOL_BYTES12, SOL_BYTES13, SOL_BYTES14, SOL_BYTES15, SOL_BYTES16, SOL_BYTES17, SOL_BYTES18, SOL_BYTES19, SOL_BYTES20, SOL_BYTES21, SOL_BYTES22, SOL_BYTES23, SOL_BYTES24, SOL_BYTES25, SOL_BYTES26, SOL_BYTES27, SOL_BYTES28, SOL_BYTES29, SOL_BYTES30, SOL_BYTES31, SOL_BYTES32:
 		{
-			instance, _ := value.(string)
-			return SolBytes(instance)
+			switch tv := value.(type) {
+			case string:
+				return SolBytesFromHex(tv)
+			case []byte:
+				return SolBytes(tv)
+			}
 		}
 	case SOL_BYTES1_ARRAY, SOL_BYTES2_ARRAY, SOL_BYTES3_ARRAY, SOL_BYTES4_ARRAY, SOL_BYTES5_ARRAY, SOL_BYTES6_ARRAY, SOL_BYTES7_ARRAY, SOL_BYTES8_ARRAY, SOL_BYTES9_ARRAY, SOL_BYTES10_ARRAY, SOL_BYTES11_ARRAY, SOL_BYTES12_ARRAY, SOL_BYTES13_ARRAY, SOL_BYTES14_ARRAY, SOL_BYTES15_ARRAY, SOL_BYTES16_ARRAY, SOL_BYTES17_ARRAY, SOL_BYTES18_ARRAY, SOL_BYTES19_ARRAY, SOL_BYTES20_ARRAY, SOL_BYTES21_ARRAY, SOL_BYTES22_ARRAY, SOL_BYTES23_ARRAY, SOL_BYTES24_ARRAY, SOL_BYTES25_ARRAY, SOL_BYTES26_ARRAY, SOL_BYTES27_ARRAY, SOL_BYTES28_ARRAY, SOL_BYTES29_ARRAY, SOL_BYTES30_ARRAY, SOL_BYTES31_ARRAY, SOL_BYTES32_ARRAY:
 		{
@@ -129,9 +141,11 @@ func ToSolValue(value interface{}, leafEncoding string) interface{} {
 		}
 	case SOL_STRING, SOL_BYTES:
 		{
-			instance, ok := value.(string)
-			if ok {
-				return SolBytes(instance)
+			switch tv := value.(type) {
+			case string:
+				return SolBytesFromHex(tv)
+			case []byte:
+				return SolBytes(tv)
 			}
 		}
 	case SOL_STRING_ARRAY, SOL_BYTES_ARRAY:
@@ -219,9 +233,11 @@ func ToJsonValue(value interface{}, leafEncoding string) interface{} {
 		}
 	case SOL_BYTES1, SOL_BYTES2, SOL_BYTES3, SOL_BYTES4, SOL_BYTES5, SOL_BYTES6, SOL_BYTES7, SOL_BYTES8, SOL_BYTES9, SOL_BYTES10, SOL_BYTES11, SOL_BYTES12, SOL_BYTES13, SOL_BYTES14, SOL_BYTES15, SOL_BYTES16, SOL_BYTES17, SOL_BYTES18, SOL_BYTES19, SOL_BYTES20, SOL_BYTES21, SOL_BYTES22, SOL_BYTES23, SOL_BYTES24, SOL_BYTES25, SOL_BYTES26, SOL_BYTES27, SOL_BYTES28, SOL_BYTES29, SOL_BYTES30, SOL_BYTES31, SOL_BYTES32:
 		{
-			instance, ok := value.(string)
-			if ok {
-				return SolBytes(instance)
+			switch tv := value.(type) {
+			case string:
+				return SolBytesFromHex(tv)
+			case []byte:
+				return SolBytes(tv)
 			}
 		}
 	case SOL_BYTES1_ARRAY, SOL_BYTES2_ARRAY, SOL_BYTES3_ARRAY, SOL_BYTES4_ARRAY, SOL_BYTES5_ARRAY, SOL_BYTES6_ARRAY, SOL_BYTES7_ARRAY, SOL_BYTES8_ARRAY, SOL_BYTES9_ARRAY, SOL_BYTES10_ARRAY, SOL_BYTES11_ARRAY, SOL_BYTES12_ARRAY, SOL_BYTES13_ARRAY, SOL_BYTES14_ARRAY, SOL_BYTES15_ARRAY, SOL_BYTES16_ARRAY, SOL_BYTES17_ARRAY, SOL_BYTES18_ARRAY, SOL_BYTES19_ARRAY, SOL_BYTES20_ARRAY, SOL_BYTES21_ARRAY, SOL_BYTES22_ARRAY, SOL_BYTES23_ARRAY, SOL_BYTES24_ARRAY, SOL_BYTES25_ARRAY, SOL_BYTES26_ARRAY, SOL_BYTES27_ARRAY, SOL_BYTES28_ARRAY, SOL_BYTES29_ARRAY, SOL_BYTES30_ARRAY, SOL_BYTES31_ARRAY, SOL_BYTES32_ARRAY:
@@ -233,9 +249,11 @@ func ToJsonValue(value interface{}, leafEncoding string) interface{} {
 		}
 	case SOL_STRING, SOL_BYTES:
 		{
-			instance, ok := value.(string)
-			if ok {
-				return SolBytes(instance)
+			switch tv := value.(type) {
+			case string:
+				return SolBytesFromHex(tv)
+			case []byte:
+				return SolBytes(tv)
 			}
 		}
 	case SOL_STRING_ARRAY, SOL_BYTES_ARRAY:
