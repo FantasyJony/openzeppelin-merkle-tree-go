@@ -1,16 +1,16 @@
 package standard_merkle_tree
 
 import (
-	"fmt"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func TestSMTCreateTree(t *testing.T) {
 
 	tree, err := CreateTree([]string{SOL_ADDRESS, SOL_UINT256})
 	if err != nil {
-		fmt.Println("CreateTree ERR: ", err)
+		t.Fatal("CreateTree error:", err)
 	}
 
 	leaf1 := []interface{}{
@@ -20,9 +20,9 @@ func TestSMTCreateTree(t *testing.T) {
 
 	hash1, err := tree.AddLeaf(leaf1)
 	if err != nil {
-		fmt.Println("AddLeaf ERR: ", err)
+		t.Fatal("AddLeaf error:", err)
 	}
-	fmt.Println("01 AddLeaf Hash: ", hexutil.Encode(hash1))
+	t.Log("01 AddLeaf Hash:", hexutil.Encode(hash1))
 
 	leaf2 := []interface{}{
 		SolAddress("0x2222222222222222222222222222222222222222"),
@@ -31,19 +31,18 @@ func TestSMTCreateTree(t *testing.T) {
 
 	hash2, err := tree.AddLeaf(leaf2)
 	if err != nil {
-		fmt.Println("AddLeaf ERR: ", err)
+		t.Fatal("AddLeaf error:", err)
 	}
-	fmt.Println("02 AddLeaf Hash: ", hexutil.Encode(hash2))
+	t.Log("02 AddLeaf Hash:", hexutil.Encode(hash2))
 
 	root, err := tree.MakeTree()
 	if err != nil {
-		fmt.Println("MakeTree ERR: ", err)
+		t.Fatal("MakeTree error:", err)
 	}
-	fmt.Println("03 Merkle Root: ", hexutil.Encode(root))
+	t.Log("03 Merkle Root:", hexutil.Encode(root))
 }
 
 func TestSMTOf(t *testing.T) {
-
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
 		SolNumber("5000000000000000000"),
@@ -67,28 +66,27 @@ func TestSMTOf(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("Merkle Root: ", root)
+	t.Log("Merkle Root:", root)
 
 	proof, err := tree.GetProof(leaf1)
 	strProof := make([]string, len(proof))
 	if err != nil {
-		fmt.Println("GetProof ERR", err)
+		t.Fatal("GetProof error:", err)
 	}
 	for _, v := range proof {
 		strProof = append(strProof, hexutil.Encode(v))
 	}
-	fmt.Println("02 proof: ", strProof)
+	t.Log("Proof:", strProof)
 }
 
 func TestSMTVerify(t *testing.T) {
-
 	root, err := hexutil.Decode("0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77")
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to decode root:", err)
 	}
 
 	leafEncodings := []string{
@@ -103,7 +101,7 @@ func TestSMTVerify(t *testing.T) {
 
 	proofValue01, err := hexutil.Decode("0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc")
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to decode proof value:", err)
 	}
 	proof := [][]byte{
 		proofValue01,
@@ -111,22 +109,23 @@ func TestSMTVerify(t *testing.T) {
 
 	leaf, err := LeafHash(leafEncodings, value)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to generate leaf hash:", err)
 	}
 
 	verified, err := Verify(root, leaf, proof)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to verify proof:", err)
 	}
 
-	fmt.Println(verified)
+	if !verified {
+		t.Error("Proof verification failed")
+	}
 }
 
 func TestSMTVerifyMultiProof(t *testing.T) {
-
 	root, err := hexutil.Decode("0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77")
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to decode root:", err)
 	}
 
 	leafEncodings := []string{
@@ -141,12 +140,12 @@ func TestSMTVerifyMultiProof(t *testing.T) {
 
 	leaf1, err := LeafHash(leafEncodings, value)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to generate leaf hash:", err)
 	}
 
 	proofValue01, err := hexutil.Decode("0xb92c48e9d7abe27fd8dfd6b5dfdbfb1c9a463f80c712b66f3a5180a090cccafc")
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to decode proof value:", err)
 	}
 	proof := [][]byte{
 		proofValue01,
@@ -168,14 +167,15 @@ func TestSMTVerifyMultiProof(t *testing.T) {
 
 	verified, err := VerifyMultiProof(root, multiProof)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Failed to verify multi proof:", err)
 	}
 
-	fmt.Println(verified)
+	if !verified {
+		t.Error("Multi proof verification failed")
+	}
 }
 
 func TestGetProofAndVerify(t *testing.T) {
-
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
 		SolNumber("5000000000000000000"),
@@ -199,50 +199,51 @@ func TestGetProofAndVerify(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
 	proof, err := tree.GetProof(leaf1)
 	strProof := make([]string, len(proof))
 	if err != nil {
-		fmt.Println("GetProof ERR", err)
+		t.Fatal("GetProof error:", err)
 	}
 
 	for _, v := range proof {
 		strProof = append(strProof, hexutil.Encode(v))
 	}
-	fmt.Println("02 proof: ", strProof)
+	t.Log("02 proof:", strProof)
 
 	proof2, err := tree.GetProofWithIndex(0)
 	strProof2 := make([]string, len(proof2))
 	if err != nil {
-		fmt.Println("GetProof ERR", err)
+		t.Fatal("GetProof error:", err)
 	}
 
 	for _, v := range proof2 {
 		strProof2 = append(strProof2, hexutil.Encode(v))
 	}
-	fmt.Println("03 proof index: ", strProof2)
+	t.Log("03 proof index:", strProof2)
 
 	isVerify, err := tree.Verify(proof, leaf1)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Verify error:", err)
 	}
-	fmt.Println("04 verify: ", isVerify)
+	t.Log("04 verify:", isVerify)
 
 	isIndexVerify, err := tree.VerifyWithIndex(proof, 0)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("VerifyWithIndex error:", err)
 	}
-	fmt.Println("05 verifyWithIndex: ", isIndexVerify)
-
+	if !isIndexVerify {
+		t.Error("VerifyWithIndex failed")
+	}
+	t.Log("05 verifyWithIndex:", isIndexVerify)
 }
 
 func TestGetMultiProofAndVerify(t *testing.T) {
-
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
 		SolNumber("5000000000000000000"),
@@ -266,30 +267,35 @@ func TestGetMultiProofAndVerify(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
 	proof, err := tree.GetMultiProof([][]interface{}{leaf1})
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("GetMultiProof error:", err)
 	}
-	fmt.Println("02 leaf1 proof: ", proof)
+	t.Log("02 leaf1 proof:", proof)
 
 	proof02, err := tree.GetMultiProofWithIndices([]int{0})
-	fmt.Println("03 leaf1 proof: ", proof02)
+	if err != nil {
+		t.Fatal("GetMultiProofWithIndices error:", err)
+	}
+	t.Log("03 leaf1 proof:", proof02)
 
 	multiValue, err := tree.VerifyMultiProof(proof)
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("VerifyMultiProof error:", err)
 	}
-	fmt.Println("04 VerifyMultiProof: ", multiValue)
+	if !multiValue {
+		t.Error("VerifyMultiProof failed")
+	}
+	t.Log("04 VerifyMultiProof:", multiValue)
 }
 
 func TestDumpOf(t *testing.T) {
-
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
 		SolNumber("5000000000000000000"),
@@ -313,46 +319,47 @@ func TestDumpOf(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
-	fmt.Println("02 TreeMarshal")
+	t.Log("02 TreeMarshal")
 	value, err := tree.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value))
+	t.Log(string(value))
 
-	fmt.Println("03 TreeUnmarshal")
+	t.Log("03 TreeUnmarshal")
 	tree2, err := TreeUnmarshal(value)
+	if err != nil {
+		t.Fatal("TreeUnmarshal error:", err)
+	}
 	value2, err := tree2.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value2))
+	t.Log(string(value2))
 
-	fmt.Println("04 Load")
+	t.Log("04 Load")
 	tree3, err := Load([]byte(string(value2)))
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("Load error:", err)
 	}
-	fmt.Println(hexutil.Encode(tree3.GetRoot()))
+	t.Log("05 Root:", hexutil.Encode(tree3.GetRoot()))
 }
 
 func TestDumpLeafProof(t *testing.T) {
 
 	leaf1 := []interface{}{
 		SolAddress("0x1111111111111111111111111111111111111111"),
-		//SolNumber("5000000000000000000"),
 		SolNumber("500"),
 	}
 
 	leaf2 := []interface{}{
 		SolAddress("0x2222222222222222222222222222222222222222"),
-		//SolNumber("2500000000000000000"),
 		SolNumber("250"),
 	}
 
@@ -369,16 +376,16 @@ func TestDumpLeafProof(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
-	fmt.Println("02 DumpLeafProof")
+	t.Log("02 DumpLeafProof")
 	proof, err := tree.DumpLeafProof()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("DumpLeafProof error:", err)
 	}
 
 	for k, v := range proof.Proofs {
@@ -386,20 +393,23 @@ func TestDumpLeafProof(t *testing.T) {
 		for a, b := range v.Proof {
 			bProof[a], _ = hexutil.Decode(b)
 		}
-		r, err := tree.Verify(bProof, v.getSolValueUnmarshal(proof.LeafEncoding))
+		solVal, err := v.getSolValueUnmarshal(proof.LeafEncoding)
 		if err != nil {
-			fmt.Println("Verify ERR: ", err)
-			return
+			t.Fatal("getSolValueUnmarshal error:", err)
 		}
-		fmt.Println("03 Verify Proof ", k, " :", r)
+		r, err := tree.Verify(bProof, solVal)
+		if err != nil {
+			t.Fatal("Verify error:", err)
+		}
+		t.Log("03 Verify Proof", k, ":", r)
 	}
 
-	fmt.Println("04 TreeProofMarshal")
+	t.Log("04 TreeProofMarshal")
 	proofJson, err := tree.TreeProofMarshal()
 	if err != nil {
-		fmt.Println("TreeProofMarshal ERR: ", err)
+		t.Fatal("TreeProofMarshal error:", err)
 	}
-	fmt.Println(string(proofJson))
+	t.Log(string(proofJson))
 }
 
 func TestArrayArg(t *testing.T) {
@@ -436,36 +446,39 @@ func TestArrayArg(t *testing.T) {
 		})
 
 	if err != nil {
-		fmt.Println("Of ERR: ", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
 	proof, err := tree.GetProof(values[0])
 	strProof := make([]string, len(proof))
 	if err != nil {
-		fmt.Println("GetProof ERR", err)
+		t.Fatal("GetProof error:", err)
 	}
 	for _, v := range proof {
 		strProof = append(strProof, hexutil.Encode(v))
 	}
-	fmt.Println("02 proof: ", strProof)
+	t.Log("02 proof:", strProof)
 
-	fmt.Println("03 TreeMarshal")
+	t.Log("03 TreeMarshal")
 	value, err := tree.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value))
+	t.Log(string(value))
 
-	fmt.Println("04 TreeUnmarshal")
+	t.Log("04 TreeUnmarshal")
 	tree2, err := TreeUnmarshal(value)
+	if err != nil {
+		t.Fatal("TreeUnmarshal error:", err)
+	}
 	value2, err := tree2.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value2))
+	t.Log(string(value2))
 }
 
 func TestAbiArg(t *testing.T) {
@@ -503,36 +516,39 @@ func TestAbiArg(t *testing.T) {
 		leafEncodings)
 
 	if err != nil {
-		fmt.Println("Of ERR: ", err)
+		t.Fatal("Of error:", err)
 	}
 
 	root := hexutil.Encode(tree.GetRoot())
-	fmt.Println("01 Merkle Root: ", root)
+	t.Log("01 Merkle Root:", root)
 
 	proof, err := tree.GetProof(values[0])
 	strProof := make([]string, len(proof))
 	if err != nil {
-		fmt.Println("GetProof ERR", err)
+		t.Fatal("GetProof error:", err)
 	}
 	for _, v := range proof {
 		strProof = append(strProof, hexutil.Encode(v))
 	}
-	fmt.Println("02 proof: ", strProof)
+	t.Log("02 proof:", strProof)
 
-	fmt.Println("03 TreeMarshal")
+	t.Log("03 TreeMarshal")
 	value, err := tree.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value))
+	t.Log(string(value))
 
-	fmt.Println("04 TreeUnmarshal")
+	t.Log("04 TreeUnmarshal")
 	tree2, err := TreeUnmarshal(value)
+	if err != nil {
+		t.Fatal("TreeUnmarshal error:", err)
+	}
 	value2, err := tree2.TreeMarshal()
 	if err != nil {
-		fmt.Println(err)
+		t.Fatal("TreeMarshal error:", err)
 	}
-	fmt.Println(string(value2))
+	t.Log(string(value2))
 }
 
 func TestStringArg(t *testing.T) {
@@ -558,8 +574,7 @@ func TestStringArg(t *testing.T) {
 
 	t1, err := Of(values, leafEncodings)
 	if err != nil {
-		println("error:", err.Error())
-		return
+		t.Fatal("error:", err)
 	}
-	fmt.Println("Root: ", hexutil.Encode(t1.GetRoot()))
+	t.Log("Root:", hexutil.Encode(t1.GetRoot()))
 }
